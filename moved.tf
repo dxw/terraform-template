@@ -1,3 +1,5 @@
 # https://developer.hashicorp.com/terraform/language/modules/develop/refactoring
-moved {
-}
+# moved {
+#   from = example_resource.a
+#   to   = example_resource.b
+# }
