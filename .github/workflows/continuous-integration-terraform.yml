@@ -13,33 +13,42 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Check for terraform version mismatch
+      - name: Get terraform version
+        id: get-terraform-version
         run: |
           DOTFILE_VERSION=$(cat .terraform-version)
-          TERRAFORM_IMAGE_REFERENCES=$(grep "uses: docker://hashicorp/terraform" .github/workflows/continuous-integration-terraform.yml | grep -v TERRAFORM_IMAGE_REFERENCES | wc -l | tr -d ' ')
-          if [ "$(grep "docker://hashicorp/terraform:${DOTFILE_VERSION}" .github/workflows/continuous-integration-terraform.yml | wc -l | tr -d ' ')" != "$TERRAFORM_IMAGE_REFERENCES" ]
-          then
-            echo -e "\033[1;31mError: terraform version in .terraform-version file does not match docker://hashicorp/terraform versions in .github/workflows/continuous-integration-terraform.yml"
-            exit 1
-          fi
+          echo "version=$DOTFILE_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Pull Terraform image
+        run: |
+          docker pull hashicorp/terraform:${{ steps.get-terraform-version.outputs.version }}
 
       - name: Run a Terraform init
-        uses: docker://hashicorp/terraform:1.5.3
-        with:
-          entrypoint: terraform
-          args: init
+        run: |
+          docker run \
+            --rm \
+            -v $(pwd):/terraform \
+            -w /terraform \
+            hashicorp/terraform:${{ steps.get-terraform-version.outputs.version }} \
+            init
 
       - name: Run a Terraform validate
-        uses: docker://hashicorp/terraform:1.5.3
-        with:
-          entrypoint: terraform
-          args: validate
+        run: |
+          docker run \
+            --rm \
+            -v $(pwd):/terraform \
+            -w /terraform \
+            hashicorp/terraform:${{ steps.get-terraform-version.outputs.version }} \
+            validate
 
       - name: Run a Terraform format check
-        uses: docker://hashicorp/terraform:1.5.3
-        with:
-          entrypoint: terraform
-          args: fmt -check=true -diff=true
+        run: |
+          docker run \
+            --rm \
+            -v $(pwd):/terraform \
+            -w /terraform \
+            hashicorp/terraform:${{ steps.get-terraform-version.outputs.version }} \
+            fmt -check=true -diff=true
 
   terraform-docs-validation:
     name: Terraform Docs validation
