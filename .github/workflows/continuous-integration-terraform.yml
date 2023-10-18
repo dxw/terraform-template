@@ -70,9 +70,9 @@ jobs:
         run: |
           echo "GITHUB_PR_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
 
-      - name: Output PR base branch
+      - name: Get commit message
         run: |
-          echo "$GITHUB_PR_BRANCH"
+          echo "GIT_COMMIT_MESSAGE=$(git show -s --format=%s)" >> $GITHUB_ENV
 
       - name: Generate Terraform docs
         uses: terraform-docs/gh-actions@v1.0.0
@@ -94,3 +94,4 @@ jobs:
           output-method: inject
           git-push: true
           ref: ${{ github.event.pull_request.head.ref }}
+          git-commit-message: "${{ env.GIT_COMMIT_MESSAGE }} - Terraform Docs"
