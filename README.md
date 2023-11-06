@@ -1,7 +1,7 @@
 # <REPLACE WITH USEFUL TERRAFORM DESCRIPTION>
 
 [![Terraform CI](./actions/workflows/continuous-integration-terraform.yml/badge.svg?branch=main)](./actions/workflows/continuous-integration-terraform.yml?branch=main)
-[![GitHub release](./releases)](./releases)
+[![GitHub release](https://img.shields.io/github/release/<ORG>/<REPO>.svg)](./releases)
 
 This <module/project> creates and manages <REPLACE WITH MAIN RESOURCE NAMES/URLS>.
 
